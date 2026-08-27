@@ -1,0 +1,32 @@
+#pragma once
+
+#include <cstdint>
+#include <optional>
+#include <span>
+
+namespace kafka {
+    namespace protocol {
+        enum class ApiKey : std::int16_t {
+          ApiVersion = 18,
+          DescribeTopicPartition = 75,
+          Produce = 0,
+          Fetch = 1,
+          ListOffsets = 2,
+          CreateTopics = 19
+        };
+
+        struct ApiSpec {
+            ApiKey key;
+            std::int16_t min_version;
+            std::int16_t max_version;
+            std::int16_t request_header_version;
+            std::int16_t response_header_version;
+        };
+
+        std::span<const ApiSpec> supported_apis();
+        std::optional<ApiKey> api_key_from_int(std::int16_t key);
+        std::optional<ApiSpec> spec_for(ApiKey key, std::int16_t version);
+        bool supports_version(ApiKey key, std::int16_t version);
+        int16_t request_header_version(ApiKey key, std::int16_t version);
+    }
+}
